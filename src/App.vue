@@ -1,26 +1,93 @@
 <script setup>
 import data from '@/assets/data/data.json'
-import { reactive } from 'vue'
+import { reactive, ref, useTemplateRef } from 'vue'
 import CommentFormComponent from './components/CommentFormComponent.vue'
 import CommentComponent from './components/CommentComponent.vue'
 
 const appData = reactive(data)
-const comments = appData.comments
+let comments = appData.comments
+
+const commentForDeletionId = ref(-1)
+
+const deleteModal = useTemplateRef('deleteModal')
+
+// Is this a good practice? Or should I perform a filter in comments?
+function upvoteComment(comment) {
+  comment.score = comment.score + 1
+}
+
+function downvoteComment(comment) {
+  comment.score = comment.score - 1
+}
+
+function editComment(comment, newText) {
+  comment.content = newText
+}
+
+function startDeleting(comment) {
+  deleteModal.value.showModal()
+  commentForDeletionId.value = comment.id
+  console.log(comment.id)
+}
+
+function cancelDeletion() {
+  deleteModal.value.close()
+  commentForDeletionId.value = -1
+}
+
+function confirmDeletion() {
+  deleteModal.value.close()
+
+  /*comments = comments.map((comment) => {
+      return {
+        ...comment,
+        replies: comment.replies.filter((reply) => reply.id !== commentForDeletionId.value),
+      }
+    })
+    comments = comments.filter((comment) => comment.id !== commentForDeletionId.value)
+  }*/
+
+  commentForDeletionId.value = -1
+}
 </script>
 
 <template>
   <div class="container">
     <template v-for="comment in comments" :key="comment.id">
-      <CommentComponent :comment></CommentComponent>
+      <CommentComponent
+        :comment
+        @upvote-comment="upvoteComment(comment)"
+        @downvote-comment="downvoteComment(comment)"
+        @edit-comment="(newText) => editComment(comment, newText)"
+        @start-deleting="startDeleting(comment)"
+      ></CommentComponent>
       <CommentComponent
         v-for="reply in comment.replies"
         :key="reply.id"
         :comment="reply"
+        @upvote-comment="upvoteComment(reply)"
+        @downvote-comment="downvoteComment(reply)"
+        @edit-comment="(newText) => editComment(reply, newText)"
+        @start-deleting="startDeleting(reply)"
       ></CommentComponent>
     </template>
 
     <CommentFormComponent></CommentFormComponent>
   </div>
+
+  <dialog class="comment-delete-modal" ref="deleteModal">
+    <h2 class="modal-heading">Delete comment</h2>
+    <p class="modal-text">
+      Are you sure you want to delete this comment? This will remove the comment and can't be
+      undone.
+    </p>
+    <div class="modal-controls">
+      <button class="modal-control" @click="cancelDeletion">no, cancel</button>
+      <button class="modal-control control-delete" autofocus @click="confirmDeletion">
+        yes, delete
+      </button>
+    </div>
+  </dialog>
 </template>
 
 <style scoped>
@@ -30,5 +97,52 @@ const comments = appData.comments
   display: flex;
   flex-direction: column;
   gap: 1rem;
+}
+
+.comment-delete-modal[open] {
+  border: none;
+  padding: 1.5rem;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  border-radius: 5px;
+}
+
+.comment-delete-modal::backdrop {
+  background-color: hsla(0, 0%, 0%, 0.7);
+}
+
+.modal-heading {
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: var(--color-dark-blue);
+}
+
+.modal-text {
+  line-height: 1.4em;
+  color: var(--color-grayish-blue);
+}
+
+.modal-controls {
+  display: flex;
+  justify-content: space-between;
+}
+
+.modal-control {
+  color: var(--color-white);
+  background-color: var(--color-grayish-blue);
+  text-transform: uppercase;
+  border: none;
+  border-radius: 10px;
+  font-family: 'Rubik';
+  font-size: 1rem;
+  justify-self: right;
+  padding: 0.8rem 1.5rem;
+  cursor: pointer;
+}
+
+.control-delete {
+  background-color: var(--color-soft-red);
 }
 </style>
