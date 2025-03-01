@@ -1,6 +1,7 @@
 <script setup>
 import { useCurrentUserStore } from '@/stores/currentuser'
 import { computed, ref } from 'vue'
+import CommentForm from './CommentForm.vue'
 
 const props = defineProps({
   comment: { type: Object, required: true },
@@ -86,6 +87,8 @@ function finishEditing() {
       <button class="comment-update" @click="finishEditing">update</button>
     </div>
   </div>
+
+  <CommentForm :reply-to="comment.id" />
 </template>
 
 <style scoped>

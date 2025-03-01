@@ -1,7 +1,7 @@
 <script setup>
 import data from '@/assets/data/data.json'
 import { ref, useTemplateRef } from 'vue'
-import CommentFormComponent from './components/CommentFormComponent.vue'
+import CommentForm from './components/CommentForm.vue'
 import CommentComponent from './components/CommentComponent.vue'
 
 const appData = ref(data)
@@ -24,7 +24,7 @@ function editComment(comment, newText) {
   comment.content = newText
 }
 
-function startDeleting(comment) {
+function startDeletingComment(comment) {
   deleteModal.value.showModal()
   commentForDeletionId.value = comment.id
 }
@@ -47,6 +47,10 @@ function confirmDeletion() {
 
   commentForDeletionId.value = undefined
 }
+
+function addComment(comment) {
+  comments.value = [...comments.value, comment]
+}
 </script>
 
 <template>
@@ -57,7 +61,7 @@ function confirmDeletion() {
         @upvote-comment="upvoteComment(comment)"
         @downvote-comment="downvoteComment(comment)"
         @edit-comment="(newText) => editComment(comment, newText)"
-        @start-deleting="startDeleting(comment)"
+        @start-deleting="startDeletingComment(comment)"
       ></CommentComponent>
       <CommentComponent
         v-for="reply in comment.replies"
@@ -66,11 +70,11 @@ function confirmDeletion() {
         @upvote-comment="upvoteComment(reply)"
         @downvote-comment="downvoteComment(reply)"
         @edit-comment="(newText) => editComment(reply, newText)"
-        @start-deleting="startDeleting(reply)"
+        @start-deleting="startDeletingComment(reply)"
       ></CommentComponent>
     </template>
 
-    <CommentFormComponent></CommentFormComponent>
+    <CommentForm @register-comment="addComment"></CommentForm>
   </div>
 
   <dialog ref="deleteModal" class="comment-delete-modal">
