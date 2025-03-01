@@ -1,14 +1,18 @@
 <script setup>
 import { useCurrentUserStore } from '@/stores/currentuser'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 
-const props = defineProps(['comment'])
+const props = defineProps({
+  comment: { type: Object, required: true },
+})
+
 const emit = defineEmits(['upvoteComment', 'downvoteComment', 'editComment', 'startDeleting'])
 
 const currentUserStore = useCurrentUserStore()
 
 const isEditing = ref(false)
-const commentText = ref(props.comment.content)
+
+const localComment = computed(() => JSON.parse(JSON.stringify(props.comment)))
 
 function authorIsCurrentUser() {
   return props.comment.user.username === currentUserStore.username
@@ -20,7 +24,7 @@ function startEditing() {
 
 function finishEditing() {
   isEditing.value = false
-  emit('editComment', commentText.value)
+  emit('editComment', localComment.value.content)
 }
 </script>
 
@@ -33,17 +37,17 @@ function finishEditing() {
         :alt="props.comment.user.username"
       />
       <div class="author-name">{{ props.comment.user.username }}</div>
-      <div class="author-badge" v-if="authorIsCurrentUser()">you</div>
+      <div v-if="authorIsCurrentUser()" class="author-badge">you</div>
       <div class="timestamp">{{ props.comment.createdAt }}</div>
     </div>
 
-    <div class="comment-body" v-if="!isEditing">
-      <span class="comment-replyingTo" v-if="props.comment.replyingTo !== undefined"
+    <div v-if="!isEditing" class="comment-body">
+      <span v-if="props.comment.replyingTo !== undefined" class="comment-replyingTo"
         >@{{ `${props.comment.replyingTo} ` }} </span
-      >{{ commentText }}
+      >{{ localComment.content }}
     </div>
 
-    <div class="controls-vote" v-if="!isEditing">
+    <div v-if="!isEditing" class="controls-vote">
       <button class="control control-downvote" @click="emit('downvoteComment')">
         <img src="@/assets/images/icon-minus.svg" alt="downvote comment" />
       </button>
@@ -55,12 +59,12 @@ function finishEditing() {
       </button>
     </div>
 
-    <div class="controls-actions" v-if="!isEditing">
-      <button class="action" v-if="!authorIsCurrentUser()">
+    <div v-if="!isEditing" class="controls-actions">
+      <button v-if="!authorIsCurrentUser()" class="action">
         <img class="action-icon" src="@/assets/images/icon-reply.svg" />
         <span class="action-name">reply</span>
       </button>
-      <div class="actions-author" v-if="authorIsCurrentUser()">
+      <div v-if="authorIsCurrentUser()" class="actions-author">
         <button class="action action-delete" @click="emit('startDeleting')">
           <img class="action-icon" src="@/assets/images/icon-delete.svg" />
           <span class="action-name">delete</span>
@@ -72,12 +76,12 @@ function finishEditing() {
       </div>
     </div>
 
-    <div class="comment-edit-box" v-if="isEditing">
+    <div v-if="isEditing" class="comment-edit-box">
       <textarea
-        name="edit-comment"
         id="edit-comment"
+        v-model="localComment.content"
+        name="edit-comment"
         class="comment-edit-input"
-        v-model="commentText"
       ></textarea>
       <button class="comment-update" @click="finishEditing">update</button>
     </div>

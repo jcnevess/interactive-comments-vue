@@ -7,8 +7,8 @@ const currentUserStore = useCurrentUserStore()
 <template>
   <form class="comment-submit" action="#">
     <textarea
-      name="comment-entry"
       id="comment-entry"
+      name="comment-entry"
       class="comment-entry"
       placeholder="Add a comment..."
       rows="4"

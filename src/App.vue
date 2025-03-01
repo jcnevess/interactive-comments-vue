@@ -1,13 +1,13 @@
 <script setup>
 import data from '@/assets/data/data.json'
-import { reactive, ref, useTemplateRef } from 'vue'
+import { ref, useTemplateRef } from 'vue'
 import CommentFormComponent from './components/CommentFormComponent.vue'
 import CommentComponent from './components/CommentComponent.vue'
 
-const appData = reactive(data)
-let comments = appData.comments
+const appData = ref(data)
+const comments = ref(appData.value.comments)
 
-const commentForDeletionId = ref(-1)
+const commentForDeletionId = ref()
 
 const deleteModal = useTemplateRef('deleteModal')
 
@@ -27,27 +27,25 @@ function editComment(comment, newText) {
 function startDeleting(comment) {
   deleteModal.value.showModal()
   commentForDeletionId.value = comment.id
-  console.log(comment.id)
 }
 
 function cancelDeletion() {
   deleteModal.value.close()
-  commentForDeletionId.value = -1
+  commentForDeletionId.value = undefined
 }
 
 function confirmDeletion() {
   deleteModal.value.close()
 
-  /*comments = comments.map((comment) => {
-      return {
-        ...comment,
-        replies: comment.replies.filter((reply) => reply.id !== commentForDeletionId.value),
-      }
-    })
-    comments = comments.filter((comment) => comment.id !== commentForDeletionId.value)
-  }*/
+  comments.value = comments.value.filter((comment) => comment.id !== commentForDeletionId.value)
+  comments.value = comments.value.map((comment) => {
+    return {
+      ...comment,
+      replies: comment.replies.filter((reply) => reply.id !== commentForDeletionId.value),
+    }
+  })
 
-  commentForDeletionId.value = -1
+  commentForDeletionId.value = undefined
 }
 </script>
 
@@ -75,7 +73,7 @@ function confirmDeletion() {
     <CommentFormComponent></CommentFormComponent>
   </div>
 
-  <dialog class="comment-delete-modal" ref="deleteModal">
+  <dialog ref="deleteModal" class="comment-delete-modal">
     <h2 class="modal-heading">Delete comment</h2>
     <p class="modal-text">
       Are you sure you want to delete this comment? This will remove the comment and can't be
