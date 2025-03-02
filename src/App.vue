@@ -65,7 +65,11 @@ function addReply(parentComment, reply) {
 
 <template>
   <div class="container">
-    <div v-for="comment in comments" :key="comment.id" class="comment-board">
+    <div
+      v-for="comment in comments.toSorted((a, b) => b.score - a.score)"
+      :key="comment.id"
+      class="comment-board"
+    >
       <CommentBlock
         :comment
         @upvote-comment="upvoteComment(comment)"
