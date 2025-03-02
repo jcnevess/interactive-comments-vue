@@ -12,6 +12,17 @@ const currentUserStore = useCurrentUserStore()
 
 const isReply = computed(() => props.replyUser !== undefined)
 
+function getFormattedDate() {
+  const dateNow = new Date()
+  const fmtYear = dateNow.getFullYear()
+  const fmtMonth = (dateNow.getMonth() + 1 + '').padStart(2, '0')
+  const fmtDate = (dateNow.getDate() + '').padStart(2, '0')
+  const fmtHours = (dateNow.getHours() + '').padStart(2, '0')
+  const fmtMinutes = (dateNow.getMinutes() + '').padStart(2, '0')
+  const fmtSeconds = (dateNow.getSeconds() + '').padStart(2, '0')
+  return `${fmtYear}-${fmtMonth}-${fmtDate}T${fmtHours}:${fmtMinutes}:${fmtSeconds}`
+}
+
 let baseComment
 if (isReply.value) {
   baseComment = {
@@ -48,8 +59,7 @@ if (isReply.value) {
 const newComment = ref(JSON.parse(JSON.stringify(baseComment)))
 
 function registerComment() {
-  const dateNow = new Date()
-  newComment.value.createdAt = `${dateNow.getFullYear()}-${(dateNow.getMonth() + 1 + '').padStart(2, '0')}-${(dateNow.getDate() + '').padStart(2, '0')}T${dateNow.getHours()}:${dateNow.getMinutes()}:${dateNow.getSeconds()}`
+  newComment.value.createdAt = getFormattedDate()
   emit('addComment', newComment.value)
   resetComment()
 }
