@@ -6,7 +6,7 @@ const props = defineProps({
   replyUser: { type: String, default: undefined },
 })
 
-const emit = defineEmits(['submitComment', 'submitReply'])
+const emit = defineEmits(['addComment', 'addReply'])
 
 const currentUserStore = useCurrentUserStore()
 
@@ -50,7 +50,7 @@ const newComment = ref(JSON.parse(JSON.stringify(baseComment)))
 function registerComment() {
   const dateNow = new Date()
   newComment.value.createdAt = `${dateNow.getFullYear()}-${(dateNow.getMonth() + 1 + '').padStart(2, '0')}-${(dateNow.getDate() + '').padStart(2, '0')}`
-  emit('submitComment', newComment.value)
+  emit('addComment', newComment.value)
   resetComment()
 }
 

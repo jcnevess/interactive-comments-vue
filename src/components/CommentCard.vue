@@ -6,7 +6,13 @@ const props = defineProps({
   comment: { type: Object, required: true },
 })
 
-const emit = defineEmits(['upvoteComment', 'downvoteComment', 'editComment', 'startDeleting'])
+const emit = defineEmits([
+  'upvoteComment',
+  'downvoteComment',
+  'editComment',
+  'startDeleting',
+  'openReply',
+])
 
 const currentUserStore = useCurrentUserStore()
 
@@ -14,9 +20,9 @@ const isEditing = ref(false)
 
 const localComment = computed(() => JSON.parse(JSON.stringify(props.comment)))
 
-function authorIsCurrentUser() {
-  return props.comment.user.username === currentUserStore.username
-}
+const authorIsCurrentUser = computed(
+  () => props.comment.user.username === currentUserStore.username,
+)
 
 function startEditing() {
   isEditing.value = true
@@ -37,7 +43,7 @@ function finishEditing() {
         :alt="props.comment.user.username"
       />
       <div class="author-name">{{ props.comment.user.username }}</div>
-      <div v-if="authorIsCurrentUser()" class="author-badge">you</div>
+      <div v-if="authorIsCurrentUser" class="author-badge">you</div>
       <div class="timestamp">{{ props.comment.createdAt }}</div>
     </div>
 
@@ -48,23 +54,31 @@ function finishEditing() {
     </div>
 
     <div v-if="!isEditing" class="controls-vote">
-      <button class="control control-downvote" @click="emit('downvoteComment')">
+      <button
+        class="control control-downvote"
+        :disabled="authorIsCurrentUser"
+        @click="emit('downvoteComment')"
+      >
         <img src="@/assets/images/icon-minus.svg" alt="downvote comment" />
       </button>
       <div class="display-vote">
         {{ props.comment.score }}
       </div>
-      <button class="control control-upvote" @click="emit('upvoteComment')">
+      <button
+        class="control control-upvote"
+        :disabled="authorIsCurrentUser"
+        @click="emit('upvoteComment')"
+      >
         <img src="@/assets/images/icon-plus.svg" alt="upvote comment" />
       </button>
     </div>
 
     <div v-if="!isEditing" class="controls-actions">
-      <button v-if="!authorIsCurrentUser()" class="action">
+      <button v-if="!authorIsCurrentUser" class="action" @click="emit('openReply')">
         <img class="action-icon" src="@/assets/images/icon-reply.svg" />
         <span class="action-name">reply</span>
       </button>
-      <div v-if="authorIsCurrentUser()" class="actions-author">
+      <div v-if="authorIsCurrentUser" class="actions-author">
         <button class="action action-delete" @click="emit('startDeleting')">
           <img class="action-icon" src="@/assets/images/icon-delete.svg" />
           <span class="action-name">delete</span>

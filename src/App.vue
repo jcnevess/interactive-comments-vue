@@ -2,8 +2,7 @@
 import data from '@/assets/data/data.json'
 import { ref, useTemplateRef } from 'vue'
 import CommentForm from './components/CommentForm.vue'
-import CommentComponent from './components/CommentComponent.vue'
-import { useCurrentUserStore } from './stores/currentuser'
+import CommentBlock from './components/CommentBlock.vue'
 
 const appData = ref(data)
 const comments = ref(appData.value.comments)
@@ -11,8 +10,6 @@ const comments = ref(appData.value.comments)
 const commentForDeletionId = ref()
 
 const deleteModal = useTemplateRef('deleteModal')
-
-const currentUserStore = useCurrentUserStore()
 
 // Is this a good practice? Or should I perform a filter in comments?
 function upvoteComment(comment) {
@@ -68,37 +65,31 @@ function addReply(parentComment, reply) {
 
 <template>
   <div class="container">
-    <div v-for="comment in comments" :key="comment.id">
-      <CommentComponent
+    <div v-for="comment in comments" :key="comment.id" class="comment-board">
+      <CommentBlock
         :comment
         @upvote-comment="upvoteComment(comment)"
         @downvote-comment="downvoteComment(comment)"
         @edit-comment="(newText) => editComment(comment, newText)"
         @start-deleting="startDeletingComment(comment)"
-      />
-      <CommentForm
-        v-if="comment.user.username !== currentUserStore.username"
-        :reply-user="comment.user.username"
-        @submit-comment="(newReply) => addReply(comment, newReply)"
+        @add-comment="(newReply) => addReply(comment, newReply)"
       />
 
-      <div v-for="reply in comment.replies" :key="reply.id">
-        <CommentComponent
-          :comment="reply"
-          @upvote-comment="upvoteComment(reply)"
-          @downvote-comment="downvoteComment(reply)"
-          @edit-comment="(newText) => editComment(reply, newText)"
-          @start-deleting="startDeletingComment(reply)"
-        />
-        <CommentForm
-          v-if="reply.user.username !== currentUserStore.username"
-          :reply-user="reply.user.username"
-          @submit-comment="(newReply) => addReply(comment, newReply)"
-        />
+      <div class="comment-replies">
+        <div v-for="reply in comment.replies" :key="reply.id">
+          <CommentBlock
+            :comment="reply"
+            @upvote-comment="upvoteComment(reply)"
+            @downvote-comment="downvoteComment(reply)"
+            @edit-comment="(newText) => editComment(reply, newText)"
+            @start-deleting="startDeletingComment(reply)"
+            @add-comment="(newReply) => addReply(comment, newReply)"
+          />
+        </div>
       </div>
     </div>
 
-    <CommentForm @submit-comment="addComment" />
+    <CommentForm @add-comment="addComment" />
   </div>
 
   <dialog ref="deleteModal" class="comment-delete-modal">
@@ -170,5 +161,19 @@ function addReply(parentComment, reply) {
 
 .control-delete {
   background-color: var(--color-soft-red);
+}
+
+.comment-replies {
+  border-left: 1px solid var(--color-light-gray);
+  padding-left: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.comment-board {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 </style>
