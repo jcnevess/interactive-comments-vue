@@ -49,7 +49,7 @@ const newComment = ref(JSON.parse(JSON.stringify(baseComment)))
 
 function registerComment() {
   const dateNow = new Date()
-  newComment.value.createdAt = `${dateNow.getFullYear()}-${(dateNow.getMonth() + 1 + '').padStart(2, '0')}-${(dateNow.getDate() + '').padStart(2, '0')}`
+  newComment.value.createdAt = `${dateNow.getFullYear()}-${(dateNow.getMonth() + 1 + '').padStart(2, '0')}-${(dateNow.getDate() + '').padStart(2, '0')}T${dateNow.getHours()}:${dateNow.getMinutes()}:${dateNow.getSeconds()}`
   emit('addComment', newComment.value)
   resetComment()
 }

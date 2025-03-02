@@ -32,6 +32,37 @@ function finishEditing() {
   isEditing.value = false
   emit('editComment', localComment.value.content)
 }
+
+function getEllapsedTime(postDate) {
+  const now = new Date()
+  const fullPostDate = new Date(postDate)
+  let ellapsedSeconds = (now - fullPostDate) / 1000
+
+  let labels = [
+    { label: 'second', factor: 1 },
+    { label: 'minute', factor: 60 },
+    { label: 'hour', factor: 60 },
+    { label: 'day', factor: 24 },
+    { label: 'week', factor: 7 },
+    { label: 'month', factor: 5 },
+    { label: 'year', factor: 12 },
+  ]
+
+  let lastValidPeriod = ellapsedSeconds
+  let period = ellapsedSeconds
+  let lastValidIndex = 0
+  let index = 0
+  while (Math.floor(period) > 0) {
+    lastValidPeriod = period
+    period = period / labels[index].factor
+    lastValidIndex = index
+    index++
+  }
+
+  lastValidIndex = lastValidIndex === 0 ? 0 : lastValidIndex - 1
+
+  return `${Math.floor(lastValidPeriod)} ${labels[lastValidIndex].label}${Math.floor(lastValidPeriod) === 1 ? '' : 's'} ago`
+}
 </script>
 
 <template>
@@ -44,7 +75,7 @@ function finishEditing() {
       />
       <div class="author-name">{{ props.comment.user.username }}</div>
       <div v-if="authorIsCurrentUser" class="author-badge">you</div>
-      <div class="timestamp">{{ props.comment.createdAt }}</div>
+      <div class="timestamp">{{ getEllapsedTime(props.comment.createdAt) }}</div>
     </div>
 
     <div v-if="!isEditing" class="comment-body">
