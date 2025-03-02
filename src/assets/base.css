@@ -13,6 +13,8 @@
   --color-light-gray: hsl(223, 19%, 93%);
   --color-very-light-gray: hsl(228, 33%, 97%);
   --color-white: hsl(0, 0%, 100%);
+
+  --dimen-media-breakpoint: 640px;
 }
 
 *,
@@ -20,6 +22,7 @@
 *::after {
   box-sizing: border-box;
   margin: 0;
+  padding: 0;
 }
 
 html {

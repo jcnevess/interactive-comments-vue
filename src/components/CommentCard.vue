@@ -86,17 +86,17 @@ function getEllapsedTime(postDate) {
 
     <div v-if="!isEditing" class="controls-vote">
       <button
-        class="control control-downvote"
+        class="control control-label control-downvote"
         :disabled="authorIsCurrentUser"
         @click="emit('downvoteComment')"
       >
         <img src="@/assets/images/icon-minus.svg" alt="downvote comment" />
       </button>
-      <div class="display-vote">
+      <div class="control-label display-vote">
         {{ props.comment.score }}
       </div>
       <button
-        class="control control-upvote"
+        class="control control-label control-upvote"
         :disabled="authorIsCurrentUser"
         @click="emit('upvoteComment')"
       >
@@ -183,9 +183,19 @@ function getEllapsedTime(postDate) {
   font-weight: 500;
   color: var(--color-moderate-blue);
   border-radius: 5px;
-  padding: 0.6rem;
   justify-self: left;
   align-self: center;
+}
+
+.control-label {
+  width: 32px;
+  height: 32px;
+  overflow: hidden;
+}
+
+.control-label img {
+  place-self: center;
+  margin: auto;
 }
 
 .control {
@@ -198,10 +208,20 @@ function getEllapsedTime(postDate) {
   cursor: pointer;
 }
 
+.control-downvote img {
+  width: 11px;
+  height: 3px;
+}
+
+.control-upvote img {
+  width: 11px;
+  height: 11px;
+}
+
 .display-vote {
-  width: 3ch;
-  overflow: hidden;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .controls-actions {
@@ -241,7 +261,7 @@ function getEllapsedTime(postDate) {
 
 .actions-author {
   display: flex;
-  gap: 0.5rem;
+  gap: 1rem;
 }
 
 .comment-replyingTo {
@@ -290,5 +310,38 @@ function getEllapsedTime(postDate) {
   justify-self: right;
   padding: 1rem 2rem;
   cursor: pointer;
+}
+
+@media (min-width: 640px) {
+  .comment {
+    grid-template-columns: auto 1fr auto;
+    grid-template-rows: auto 1fr;
+    column-gap: 1.5rem;
+    padding: 1.5rem;
+  }
+
+  .comment-info {
+    order: 1;
+    grid-column: 2 / span 1;
+  }
+
+  .comment-body {
+    order: 3;
+    grid-column: 2 / span 2;
+  }
+
+  .controls-vote {
+    order: 0;
+    grid-column: 1 / span 1;
+    grid-row: 1 / 3;
+    display: flex;
+    flex-direction: column-reverse;
+    align-self: start;
+  }
+
+  .controls-actions {
+    order: 2;
+    grid-column: 3 / span 1;
+  }
 }
 </style>

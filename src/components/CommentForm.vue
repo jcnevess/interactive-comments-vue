@@ -66,7 +66,7 @@ function resetComment() {
       v-model="newComment.content"
       name="comment-entry"
       class="comment-entry"
-      placeholder="Add a comment..."
+      :placeholder="isReply ? `Reply to @${replyUser}` : 'Add a comment...'"
       rows="4"
     ></textarea>
     <img
@@ -74,7 +74,7 @@ function resetComment() {
       :alt="currentUserStore.username"
       class="entry-author-photo"
     />
-    <button class="entry-submit">send</button>
+    <button class="entry-submit">{{ isReply ? 'reply' : 'send' }}</button>
   </form>
 </template>
 
@@ -85,6 +85,7 @@ function resetComment() {
   background-color: var(--color-white);
   padding: 1rem;
   row-gap: 1rem;
+  border-radius: 5px;
 }
 
 .comment-entry {
@@ -127,5 +128,25 @@ function resetComment() {
 
 .entry-submit:active {
   background-color: var(--color-light-grayish-blue);
+}
+
+@media (min-width: 640px) {
+  .comment-submit {
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.5rem;
+    border-radius: 5px;
+  }
+
+  .entry-author-photo {
+    align-self: unset;
+    order: -1;
+  }
+
+  .comment-entry {
+    width: 100%;
+  }
 }
 </style>

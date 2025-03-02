@@ -65,35 +65,37 @@ function addReply(parentComment, reply) {
 
 <template>
   <div class="container">
-    <div
-      v-for="comment in comments.toSorted((a, b) => b.score - a.score)"
-      :key="comment.id"
-      class="comment-board"
-    >
-      <CommentBlock
-        :comment
-        @upvote-comment="upvoteComment(comment)"
-        @downvote-comment="downvoteComment(comment)"
-        @edit-comment="(newText) => editComment(comment, newText)"
-        @start-deleting="startDeletingComment(comment)"
-        @add-comment="(newReply) => addReply(comment, newReply)"
-      />
+    <div class="inner-container">
+      <div
+        v-for="comment in comments.toSorted((a, b) => b.score - a.score)"
+        :key="comment.id"
+        class="comment-board"
+      >
+        <CommentBlock
+          :comment
+          @upvote-comment="upvoteComment(comment)"
+          @downvote-comment="downvoteComment(comment)"
+          @edit-comment="(newText) => editComment(comment, newText)"
+          @start-deleting="startDeletingComment(comment)"
+          @add-comment="(newReply) => addReply(comment, newReply)"
+        />
 
-      <div class="comment-replies">
-        <div v-for="reply in comment.replies" :key="reply.id">
-          <CommentBlock
-            :comment="reply"
-            @upvote-comment="upvoteComment(reply)"
-            @downvote-comment="downvoteComment(reply)"
-            @edit-comment="(newText) => editComment(reply, newText)"
-            @start-deleting="startDeletingComment(reply)"
-            @add-comment="(newReply) => addReply(comment, newReply)"
-          />
+        <div v-if="comment.replies.length > 0" class="comment-replies">
+          <div v-for="reply in comment.replies" :key="reply.id">
+            <CommentBlock
+              :comment="reply"
+              @upvote-comment="upvoteComment(reply)"
+              @downvote-comment="downvoteComment(reply)"
+              @edit-comment="(newText) => editComment(reply, newText)"
+              @start-deleting="startDeletingComment(reply)"
+              @add-comment="(newReply) => addReply(comment, newReply)"
+            />
+          </div>
         </div>
       </div>
-    </div>
 
-    <CommentForm @add-comment="addComment" />
+      <CommentForm @add-comment="addComment" />
+    </div>
   </div>
 
   <dialog ref="deleteModal" class="comment-delete-modal">
@@ -114,6 +116,11 @@ function addReply(parentComment, reply) {
 <style scoped>
 .container {
   background-color: var(--color-very-light-gray);
+}
+
+.inner-container {
+  max-width: 720px;
+  margin: auto;
   padding: 2rem 1rem;
   display: flex;
   flex-direction: column;
@@ -179,5 +186,12 @@ function addReply(parentComment, reply) {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .comment-replies {
+    margin-left: 2rem;
+    padding-left: 2rem;
+  }
 }
 </style>
