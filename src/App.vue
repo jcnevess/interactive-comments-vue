@@ -135,6 +135,7 @@ function addReply(parentComment, reply) {
   flex-direction: column;
   gap: 1rem;
   border-radius: 5px;
+  max-width: 360px;
 }
 
 .comment-delete-modal::backdrop {

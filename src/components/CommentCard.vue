@@ -24,6 +24,13 @@ const authorIsCurrentUser = computed(
   () => props.comment.user.username === currentUserStore.username,
 )
 
+// You should add the path here as subdirectories are not served using this strategy,
+// Only the filename should be dynamic
+const avatarURL = computed(
+  () =>
+    new URL(`/src/assets/images/avatars/${props.comment.user.image.webp}`, import.meta.url).href,
+)
+
 function startEditing() {
   isEditing.value = true
 }
@@ -68,11 +75,7 @@ function getEllapsedTime(postDate) {
 <template>
   <div class="comment">
     <div class="comment-info">
-      <img
-        class="author-photo"
-        :src="props.comment.user.image.webp"
-        :alt="props.comment.user.username"
-      />
+      <img class="author-photo" :src="avatarURL" :alt="props.comment.user.username" />
       <div class="author-name">{{ props.comment.user.username }}</div>
       <div v-if="authorIsCurrentUser" class="author-badge">you</div>
       <div class="timestamp">{{ getEllapsedTime(props.comment.createdAt) }}</div>

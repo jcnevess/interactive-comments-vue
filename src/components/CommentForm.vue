@@ -12,17 +12,6 @@ const currentUserStore = useCurrentUserStore()
 
 const isReply = computed(() => props.replyUser !== undefined)
 
-function getFormattedDate() {
-  const dateNow = new Date()
-  const fmtYear = dateNow.getFullYear()
-  const fmtMonth = (dateNow.getMonth() + 1 + '').padStart(2, '0')
-  const fmtDate = (dateNow.getDate() + '').padStart(2, '0')
-  const fmtHours = (dateNow.getHours() + '').padStart(2, '0')
-  const fmtMinutes = (dateNow.getMinutes() + '').padStart(2, '0')
-  const fmtSeconds = (dateNow.getSeconds() + '').padStart(2, '0')
-  return `${fmtYear}-${fmtMonth}-${fmtDate}T${fmtHours}:${fmtMinutes}:${fmtSeconds}`
-}
-
 let baseComment
 if (isReply.value) {
   baseComment = {
@@ -58,6 +47,23 @@ if (isReply.value) {
 
 const newComment = ref(JSON.parse(JSON.stringify(baseComment)))
 
+// You should add the path here as subdirectories are not served using this strategy,
+// Only the filename should be dynamic
+const avatarURL = computed(
+  () => new URL(`/src/assets/images/avatars/${currentUserStore.image.webp}`, import.meta.url).href,
+)
+
+function getFormattedDate() {
+  const dateNow = new Date()
+  const fmtYear = dateNow.getFullYear()
+  const fmtMonth = (dateNow.getMonth() + 1 + '').padStart(2, '0')
+  const fmtDate = (dateNow.getDate() + '').padStart(2, '0')
+  const fmtHours = (dateNow.getHours() + '').padStart(2, '0')
+  const fmtMinutes = (dateNow.getMinutes() + '').padStart(2, '0')
+  const fmtSeconds = (dateNow.getSeconds() + '').padStart(2, '0')
+  return `${fmtYear}-${fmtMonth}-${fmtDate}T${fmtHours}:${fmtMinutes}:${fmtSeconds}`
+}
+
 function registerComment() {
   newComment.value.createdAt = getFormattedDate()
   emit('addComment', newComment.value)
@@ -79,11 +85,7 @@ function resetComment() {
       :placeholder="isReply ? `Reply to @${replyUser}` : 'Add a comment...'"
       rows="4"
     ></textarea>
-    <img
-      :src="currentUserStore.image.webp"
-      :alt="currentUserStore.username"
-      class="entry-author-photo"
-    />
+    <img :src="avatarURL" :alt="currentUserStore.username" class="entry-author-photo" />
     <button class="entry-submit">{{ isReply ? 'reply' : 'send' }}</button>
   </form>
 </template>
