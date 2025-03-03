@@ -19,6 +19,11 @@ const emit = defineEmits([
 const currentUserStore = useCurrentUserStore()
 
 const isReplying = ref(false)
+
+function addComment(newComment) {
+  isReplying.value = false
+  emit('addComment', newComment)
+}
 </script>
 
 <template>
@@ -34,7 +39,7 @@ const isReplying = ref(false)
     <CommentForm
       v-if="isReplying && comment.user.username !== currentUserStore.username"
       :reply-user="comment.user.username"
-      @add-comment="(newComment) => emit('addComment', newComment)"
+      @add-comment="(newComment) => addComment(newComment)"
     />
   </div>
 </template>
