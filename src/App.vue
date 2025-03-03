@@ -55,7 +55,7 @@ function addComment(comment) {
 function addReply(parentComment, reply) {
   comments.value = comments.value.map((comment) => {
     if (comment.id === parentComment.id) {
-      return { ...comment, replies: [reply, ...comment.replies] }
+      return { ...comment, replies: [...comment.replies, reply] }
     } else {
       return comment
     }
